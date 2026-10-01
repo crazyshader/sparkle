@@ -1,5 +1,6 @@
 import React, { Component, type ReactNode } from "react"
 import log from "electron-log/renderer"
+import i18n from "../i18n"
 import { invoke } from "../lib/electron"
 import Button from "./ui/button"
 import TitleBar from "./titlebar"
@@ -49,10 +50,9 @@ class ErrorBoundary extends Component<Props, State> {
           {/* @ts-expect-error */}
           <TitleBar />
           <div className="max-w-xl w-full rounded-2xl border border-sparkle-border bg-sparkle-card p-8">
-            <h1 className="text-2xl font-semibold text-red-500 mb-2">Something went wrong</h1>
+            <h1 className="text-2xl font-semibold text-red-500 mb-2">{i18n.t("Something went wrong")}</h1>
             <p className="text-sparkle-text-secondary mb-4">
-              Sparkle encountered an unexpected error. Please help us fix it by reporting this
-              issue.
+              {i18n.t("Sparkle encountered an unexpected error. Please help us fix it by reporting this issue.")}
             </p>
             <pre className="mb-6 p-4 rounded-lg bg-sparkle-accent text-xs text-sparkle-text overflow-x-auto overflow-y-auto max-h-40 border border-sparkle-border select-all">
               {errorMessage}
@@ -60,32 +60,32 @@ class ErrorBoundary extends Component<Props, State> {
             </pre>
             <div className="flex flex-wrap gap-3 mb-6">
               <Button variant="primary" onClick={this.handleOpenLogFolder} size="md">
-                Open Log Folder
+                {i18n.t("Open Log Folder")}
               </Button>
               <Button variant="secondary" onClick={this.handleRetry} size="md">
-                Try Again
+                {i18n.t("Try Again")}
               </Button>
             </div>
             <p className="text-sm text-sparkle-text-muted">
-              Please{" "}
+              {i18n.t("Please")},{" "}
               <a
                 href={GITHUB_ISSUES}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sparkle-primary hover:underline"
               >
-                create a GitHub issue
+                {i18n.t("create a GitHub issue")}
               </a>{" "}
-              or share the error and log file in our{" "}
+              {i18n.t("or share the error and log file in our")}{" "}
               <a
                 href={DISCORD_INVITE}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sparkle-primary hover:underline"
               >
-                Discord
+                {i18n.t("Discord")}
               </a>{" "}
-              so we can fix it.
+              {i18n.t("so we can fix it.")}
             </p>
           </div>
         </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState, useEffect, useMemo } from "react"
 import {
   Wrench,
@@ -48,6 +49,7 @@ function Tweaks() {
   const [isApplyingRecommended, setIsApplyingRecommended] = useState(false)
   const [isAltHeld, setIsAltHeld] = useState(false)
 
+  const { t } = useTranslation()
   const { setNeedsRestart } = useRestartStore()
   const systemInfo = useSystemStore((state) => state.systemInfo)
 
@@ -58,13 +60,13 @@ function Tweaks() {
 
     if (tweak.category && tweak.category.includes("GPU")) {
       if (!systemInfo.hasGPU) {
-        return { compatible: false, reason: "Requires a dedicated GPU" }
+        return { compatible: false, reason: t("Requires a dedicated GPU") }
       }
     }
 
     if (tweak.name === "optimize-nvidia-settings") {
       if (!systemInfo.isNvidia) {
-        return { compatible: false, reason: "Requires an NVIDIA GPU" }
+        return { compatible: false, reason: t("Requires an NVIDIA GPU") }
       }
     }
 
@@ -143,7 +145,7 @@ function Tweaks() {
     setToggleStates(newStates)
 
     const loadingToastId = toast.loading(
-      `${newState ? "Applying" : "Unapplying"} tweak: ${tweak.title}`,
+      t(newState ? "Applying tweak: {{title}}" : "Unapplying tweak: {{title}}", { title: tweak.title }),
     )
 
     try {
@@ -155,13 +157,13 @@ function Tweaks() {
           payload: tweak.name,
         })
         if (result?.success === false) {
-          throw new Error(result.error || `Failed to apply tweak: ${tweak.title}`)
+          throw new Error(result.error || t("Failed to apply tweak: {{title}}", { title: tweak.title }))
         }
         if (tweak.restart) {
           setNeedsRestart(true)
         }
         toast.update(loadingToastId, {
-          render: `Applied tweak: ${tweak.title}`,
+          render: t("Applied tweak: {{title}}", { title: tweak.title }),
           type: "success",
           isLoading: false,
           autoClose: 3000,
@@ -172,13 +174,13 @@ function Tweaks() {
           payload: tweak.name,
         })
         if (result?.success === false) {
-          throw new Error(result.error || `Failed to unapply tweak: ${tweak.title}`)
+          throw new Error(result.error || t("Failed to unapply tweak: {{title}}", { title: tweak.title }))
         }
         if (tweak.restart) {
           setNeedsRestart(true)
         }
         toast.update(loadingToastId, {
-          render: `Unapplied tweak: ${tweak.title}`,
+          render: t("Unapplied tweak: {{title}}", { title: tweak.title }),
           type: "info",
           isLoading: false,
           autoClose: 3000,
@@ -189,7 +191,7 @@ function Tweaks() {
       log.error(`Error toggling tweak ${tweak.title}:`, error)
 
       toast.update(loadingToastId, {
-        render: `Failed to ${newState ? "apply" : "unapply"} tweak: ${tweak.title}`,
+        render: t(newState ? "Failed to apply tweak: {{title}}" : "Failed to unapply tweak: {{title}}", { title: tweak.title }),
         type: "error",
         isLoading: false,
         autoClose: 3000,
@@ -220,7 +222,7 @@ function Tweaks() {
 
     setToggleStates(newStates)
 
-    const loadingToastId = toast.loading(`Applying tweak: ${tweak.title}`)
+    const loadingToastId = toast.loading(t("Applying tweak: {{title}}", { title: tweak.title }))
 
     try {
       await saveToggleStates(newStates)
@@ -229,13 +231,13 @@ function Tweaks() {
         payload: tweak.name,
       })
       if (result?.success === false) {
-        throw new Error(result.error || `Failed to apply tweak: ${tweak.title}`)
+        throw new Error(result.error || t("Failed to apply tweak: {{title}}", { title: tweak.title }))
       }
       if (tweak.restart) {
         setNeedsRestart(true)
       }
       toast.update(loadingToastId, {
-        render: `Applied tweak: ${tweak.title}`,
+        render: t("Applied tweak: {{title}}", { title: tweak.title }),
         type: "success",
         isLoading: false,
         autoClose: 3000,
@@ -258,7 +260,7 @@ function Tweaks() {
       }
 
       toast.update(loadingToastId, {
-        render: `Failed to apply tweak: ${tweak.title}`,
+        render: t("Failed to apply tweak: {{title}}", { title: tweak.title }),
         type: "error",
         isLoading: false,
         autoClose: 3000,
@@ -294,7 +296,7 @@ function Tweaks() {
 
   const forceReapplyTweak = async (tweak: Tweak) => {
     toast.dismiss()
-    const loadingToastId = toast.loading(`Reapplying tweak: ${tweak.title}`)
+    const loadingToastId = toast.loading(t("Reapplying tweak: {{title}}", { title: tweak.title }))
 
     try {
       const result = await invoke({
@@ -302,13 +304,13 @@ function Tweaks() {
         payload: tweak.name,
       })
       if (result?.success === false) {
-        throw new Error(result.error || `Failed to reapply tweak: ${tweak.title}`)
+        throw new Error(result.error || t("Failed to reapply tweak: {{title}}", { title: tweak.title }))
       }
       if (tweak.restart) {
         setNeedsRestart(true)
       }
       toast.update(loadingToastId, {
-        render: `Reapplied tweak: ${tweak.title}`,
+        render: t("Reapplied tweak: {{title}}", { title: tweak.title }),
         type: "success",
         isLoading: false,
         autoClose: 3000,
@@ -317,7 +319,7 @@ function Tweaks() {
       console.error(`Error reapplying tweak ${tweak.title}:`, error)
       log.error(`Error reapplying tweak ${tweak.title}:`, error)
       toast.update(loadingToastId, {
-        render: `Failed to reapply tweak: ${tweak.title}`,
+        render: t("Failed to reapply tweak: {{title}}", { title: tweak.title }),
         type: "error",
         isLoading: false,
         autoClose: 3000,
@@ -344,7 +346,7 @@ function Tweaks() {
     )
 
     for (const tweak of tweaksToApply) {
-      const loadingToastId = toast.loading(`Applying tweak: ${tweak.title}`)
+      const loadingToastId = toast.loading(t("Applying tweak: {{title}}", { title: tweak.title }))
 
       try {
         newStates[tweak.name] = true
@@ -356,7 +358,7 @@ function Tweaks() {
           payload: tweak.name,
         })
         if (result?.success === false) {
-          throw new Error(result.error || `Failed to apply tweak: ${tweak.title}`)
+          throw new Error(result.error || t("Failed to apply tweak: {{title}}", { title: tweak.title }))
         }
 
         if (tweak.restart) {
@@ -364,7 +366,7 @@ function Tweaks() {
         }
 
         toast.update(loadingToastId, {
-          render: `Applied tweak: ${tweak.title}`,
+          render: t("Applied tweak: {{title}}", { title: tweak.title }),
           type: "success",
           isLoading: false,
           autoClose: 3000,
@@ -378,7 +380,7 @@ function Tweaks() {
         await saveToggleStates(newStates)
 
         toast.update(loadingToastId, {
-          render: `Failed to apply tweak: ${tweak.title}`,
+          render: t("Failed to apply tweak: {{title}}", { title: tweak.title }),
           type: "error",
           isLoading: false,
           autoClose: 3000,
@@ -453,7 +455,7 @@ function Tweaks() {
     return (
       <RootDiv>
         <div className="flex items-center justify-center h-64">
-          <div className="text-slate-400">Loading tweaks...</div>
+          <div className="text-slate-400">{t("Loading tweaks...")}</div>
         </div>
       </RootDiv>
     )
@@ -463,12 +465,11 @@ function Tweaks() {
     <>
       <Modal open={isRecommendedModalOpen} onClose={() => setIsRecommendedModalOpen(false)}>
         <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 max-w-xl w-full mx-4 max-h-2xl">
-          <h3 className="text-xl font-semibold text-sparkle-text mb-3">Apply Recommended Tweaks</h3>
+          <h3 className="text-xl font-semibold text-sparkle-text mb-3">{t("Apply Recommended Tweaks")}</h3>
           <div className="text-sparkle-text-secondary text-sm leading-6 whitespace-pre-wrap max-h-64 overflow-y-auto custom-scrollbar mb-6">
-            Select the tweaks you want to apply:
+            {t("Select the tweaks you want to apply:")}
             <p className="text-xs text-orange-500 ">
-              Debloating windows is highly recommended. you can do it after you apply the recomended
-              tweaks. its not here because it has a UI
+              {t("Debloating windows is highly recommended. you can do it after you apply the recomended tweaks. its not here because it has a UI")}
             </p>
             <ul className="mt-3 space-y-3">
               {recommendedTweaksToApply.map((tweak) => (
@@ -504,15 +505,15 @@ function Tweaks() {
               onClick={() => setIsRecommendedModalOpen(false)}
               disabled={isApplyingRecommended}
             >
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button
               onClick={applyRecommendedTweaks}
               disabled={isApplyingRecommended || selectedRecommendedTweaks.size === 0}
             >
               {isApplyingRecommended
-                ? "Applying..."
-                : `Apply Selected (${selectedRecommendedTweaks.size})`}
+                ? t("Applying...")
+                : t("Apply Selected ({{count}})", { count: selectedRecommendedTweaks.size })}
             </Button>
           </div>
         </div>
@@ -535,7 +536,7 @@ function Tweaks() {
                 setIsModalOpen(false)
               }}
             >
-              Cancel
+              {t("Cancel")}
             </Button>
             {selectedTweak && (
               <Button
@@ -549,7 +550,7 @@ function Tweaks() {
                   setToggleStates(newStates)
                   setIsModalOpen(false)
 
-                  const loadingToastId = toast.loading(`Applying tweak: ${selectedTweak.title}`)
+                  const loadingToastId = toast.loading(t("Applying tweak: {{title}}", { title: selectedTweak.title }))
 
                   try {
                     await saveToggleStates(newStates)
@@ -559,14 +560,14 @@ function Tweaks() {
                     })
                     if (result?.success === false) {
                       throw new Error(
-                        result.error || `Failed to apply tweak: ${selectedTweak.title}`,
+                        result.error || t("Failed to apply tweak: {{title}}", { title: selectedTweak.title }),
                       )
                     }
                     if (selectedTweak.restart) {
                       setNeedsRestart(true)
                     }
                     toast.update(loadingToastId, {
-                      render: `Applied tweak: ${selectedTweak.title}`,
+                      render: t("Applied tweak: {{title}}", { title: selectedTweak.title }),
                       type: "success",
                       isLoading: false,
                       autoClose: 3000,
@@ -583,7 +584,7 @@ function Tweaks() {
                     await saveToggleStates(revertedStates)
 
                     toast.update(loadingToastId, {
-                      render: `Failed to apply tweak: ${selectedTweak.title}`,
+                      render: t("Failed to apply tweak: {{title}}", { title: selectedTweak.title }),
                       type: "error",
                       isLoading: false,
                       autoClose: 3000,
@@ -591,7 +592,7 @@ function Tweaks() {
                   }
                 }}
               >
-                Apply
+                {t("Apply")}
               </Button>
             )}
           </div>
@@ -603,7 +604,7 @@ function Tweaks() {
             <div className="space-y-4">
               <LargeInput
                 icon={Search}
-                placeholder="Search tweaks by name or description..."
+                placeholder={t("Search tweaks by name or description...")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -618,7 +619,7 @@ function Tweaks() {
                     }`}
                     onClick={() => setActiveCategory(category)}
                   >
-                    {categoryIcons[category]} {category}
+                    {categoryIcons[category]} {t(category)}
                   </button>
                 ))}
               </div>
@@ -629,16 +630,15 @@ function Tweaks() {
                     onClick={handleApplyRecommended}
                     disabled={isApplyingRecommended}
                   >
-                    Apply Recommended Tweaks
+                    {t("Apply Recommended Tweaks")}
                   </Button>
                 )}
                 <p className="text-sm text-sparkle-text-muted">
-                  Tip: Hold{" "}
-                  <kbd className="p-1 pt-0.5 pb-0.5 rounded-lg bg-sparkle-border">Alt</kbd> and
-                  click "Reapply" to force reapply it.
+                  {t("Tip: Hold")}{" "}
+                  <kbd className="p-1 pt-0.5 pb-0.5 rounded-lg bg-sparkle-border">Alt</kbd> {t("and click Reapply to force reapply it.")}
                 </p>
                 <p className="text-xs text-sparkle-text-secondary ml-auto mr-2">
-                  Showing {sortedTweaks.length} of {tweaks.length} tweaks
+                  {t("Showing {{shown}} of {{total}} tweaks", { shown: sortedTweaks.length, total: tweaks.length })}
                 </p>
               </div>
             </div>
@@ -662,7 +662,7 @@ function Tweaks() {
                               </Tooltip>
                             )}
                             {tweak.recommended && (
-                              <Tooltip content={"Recommended Tweak"} delay={0.3} side="right">
+                              <Tooltip content={t("Recommended Tweak")} delay={0.3} side="right">
                                 <div className="p-1.5 bg-green-500/50 rounded-lg hover:bg-green-500/80 transition-colors">
                                   <Star className="w-4 h-4 text-white fill-white" />
                                 </div>
@@ -671,7 +671,7 @@ function Tweaks() {
                             {tweak.addedversion &&
                               isNewInCurrentVersion(tweak.addedversion, CURRENT_VERSION) && (
                                 <Tooltip
-                                  content={`New in Sparkle ${tweak.addedversion}`}
+                                  content={t("New in Sparkle {{version}}", { version: tweak.addedversion })}
                                   delay={0.3}
                                   side="right"
                                 >
@@ -683,7 +683,7 @@ function Tweaks() {
                             {tweak.updatedversion &&
                               isUpdatedInCurrentVersion(tweak.updatedversion, CURRENT_VERSION) && (
                                 <Tooltip
-                                  content={`Updated in Sparkle ${tweak.updatedversion}`}
+                                  content={t("Updated in Sparkle {{version}}", { version: tweak.updatedversion })}
                                   delay={0.3}
                                   side="right"
                                 >
@@ -698,7 +698,7 @@ function Tweaks() {
                             ).map((cat) => (
                               <Tooltip
                                 key={cat}
-                                content={`${cat} Optimization`}
+                                content={`${t(cat)} ${t("Optimization")}`}
                                 delay={0.3}
                                 side="right"
                               >
@@ -709,7 +709,7 @@ function Tweaks() {
                             ))}
                             {tweak.risk && (
                               <Tooltip
-                                content={tweak.risk === "safe" ? "Safe to use" : "Use with caution"}
+                                content={tweak.risk === "safe" ? t("Safe to use") : t("Use with caution")}
                                 delay={0.3}
                                 side="right"
                               >
@@ -717,19 +717,19 @@ function Tweaks() {
                                   {tweak.risk === "safe" && (
                                     <div className="flex gap-2">
                                       <ShieldCheck className="w-4 h-4 text-green-500" />{" "}
-                                      <p className="text-xs">Safe</p>
+                                      <p className="text-xs">{t("Safe")}</p>
                                     </div>
                                   )}
                                   {tweak.risk === "risky" && (
                                     <div className="flex gap-2">
                                       <AlertTriangle className="w-4 h-4 text-red-500" />{" "}
-                                      <p className="text-xs">Risky</p>
+                                      <p className="text-xs">{t("Risky")}</p>
                                     </div>
                                   )}
                                   {tweak.risk === "caution" && (
                                     <div className="flex gap-2">
                                       <AlertTriangle className="w-4 h-4 text-yellow-500" />{" "}
-                                      <p className="text-xs">Caution</p>
+                                      <p className="text-xs">{t("Caution")}</p>
                                     </div>
                                   )}
                                 </div>
@@ -743,7 +743,7 @@ function Tweaks() {
                         <Button
                           variant="secondary"
                           className="px-2! py-1! text-xs flex items-center gap-1"
-                          title="Open Docs"
+                          title={t("Open Docs")}
                           onClick={(e) => {
                             e.preventDefault()
                             e.stopPropagation()
@@ -752,7 +752,7 @@ function Tweaks() {
                             window.open(url, "_blank")
                           }}
                         >
-                          <ExternalLink className="w-3 h-3" /> Docs
+                          <ExternalLink className="w-3 h-3" /> {t("Docs")}
                         </Button>
 
                         {(() => {
@@ -772,7 +772,7 @@ function Tweaks() {
                                     content={
                                       !compatibility.compatible
                                         ? compatibility.reason
-                                        : "Force reapply"
+                                        : t("Force reapply")
                                     }
                                   >
                                     <Button
@@ -781,7 +781,7 @@ function Tweaks() {
                                       onClick={() => forceReapplyTweak(tweak)}
                                       disabled={!compatibility.compatible}
                                     >
-                                      <RotateCw className="w-3 h-3" /> Reapply
+                                      <RotateCw className="w-3 h-3" /> {t("Reapply")}
                                     </Button>
                                   </Tooltip>
                                 ) : (
@@ -805,7 +805,7 @@ function Tweaks() {
                                     onClick={() => handleButtonClick(originalIndex)}
                                     disabled={!compatibility.compatible}
                                   >
-                                    Apply
+                                    {t("Apply")}
                                   </Button>
                                 </Tooltip>
                               )}
@@ -846,11 +846,11 @@ function Tweaks() {
                 <div className="bg-sparkle-card p-6 rounded-2xl mb-4">
                   <Search className="w-10 h-10 text-sparkle-text-secondary" />
                 </div>
-                <h3 className="text-xl font-medium mb-2 text-sparkle-text"> Loading Tweaks...</h3>
+                <h3 className="text-xl font-medium mb-2 text-sparkle-text">{t("Loading Tweaks...")}</h3>
                 <h3 className="text-sm font-medium mb-2 text-sparkle-text-muted">
-                  No tweaks Found
+                  {t("No tweaks Found")}
                 </h3>
-                <p className="text-sparkle-text-secondary">Try adjusting your search or filters</p>
+                <p className="text-sparkle-text-secondary">{t("Try adjusting your search or filters")}</p>
               </div>
             )}
           </div>

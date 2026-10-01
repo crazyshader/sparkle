@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useEffect, useState } from "react"
 import Modal from "@/components/ui/modal"
 import Button from "./ui/button"
@@ -6,6 +7,7 @@ import { invoke } from "@/lib/electron"
 import data from "../../../../package.json"
 
 export default function FirstTime(): React.ReactElement {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -21,7 +23,7 @@ export default function FirstTime(): React.ReactElement {
     localStorage.setItem("firstTime", "false")
     setOpen(false)
 
-    const toastId = toast.info("Creating restore point... Please wait before applying tweaks.", {
+    const toastId = toast.info(t("Creating restore point... Please wait before applying tweaks."), {
       autoClose: false,
       isLoading: true,
       closeOnClick: false,
@@ -32,14 +34,14 @@ export default function FirstTime(): React.ReactElement {
       await invoke({ channel: "create-sparkle-restore-point" })
 
       toast.update(toastId, {
-        render: "Restore point created!",
+        render: t("Restore point created!"),
         type: "success",
         isLoading: false,
         autoClose: 3000,
       })
     } catch (err) {
       toast.update(toastId, {
-        render: "Failed to create restore point.",
+        render: t("Failed to create restore point."),
         type: "error",
         isLoading: false,
         autoClose: 3000,
@@ -56,52 +58,49 @@ export default function FirstTime(): React.ReactElement {
   return (
     <Modal open={open} onClose={undefined}>
       <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 shadow-2xl max-w-2xl w-full mx-4 flex flex-col items-center text-center">
-        <h1 className="text-3xl font-bold text-sparkle-text mb-4">Welcome to Sparkle</h1>
+        <h1 className="text-3xl font-bold text-sparkle-text mb-4">{t("Welcome to Sparkle")}</h1>
 
         <p className="text-sparkle-text-secondary mb-6">
-          It looks like this is your first time here. <br />
-          Would you like to create a restore point before you start?
+          {t("It looks like this is your first time here.")} <br />
+          {t("Would you like to create a restore point before you start?")}
         </p>
 
         <p className="text-sparkle-text-secondary mb-4 text-sm">
           <span className="font-medium">
-            By clicking <strong>Yes</strong>, Sparkle will create a restore point and disable the
-            cooldown for future restore points.
+            {t("By clicking Yes, Sparkle will create a restore point and disable the cooldown for future restore points.")}
           </span>
         </p>
 
         <p className="text-sparkle-text-secondary mb-4 text-sm">
-          Please only download from <strong>GitHub</strong>, <strong>parcoil.com</strong>, or{" "}
-          <strong>getsparkle.net</strong>.
+          {t("Please only download from GitHub, parcoil.com, or getsparkle.net.")}
         </p>
 
         <p className="text-red-500 mb-8 text-sm">
-          If you download from any other source, this may be malware. Please uninstall and reinstall
-          from{" "}
+          {t("If you download from any other source, this may be malware. Please uninstall and reinstall from")}{" "}
           <a href="https://getsparkle.net" target="_blank" className="text-blue-500">
             getsparkle.net
           </a>
           ,{" "}
           <a href="https://github.com/Parcoil/Sparkle" target="_blank" className="text-blue-500">
-            our GitHub
+            {t("our GitHub")}
           </a>
-          , or{" "}
+          , {t("or")}{" "}
           <a href="https://parcoil.com" target="_blank" className="text-blue-500">
             parcoil.com
           </a>
-          .
+          {t(".")}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-          <Button onClick={handleGetStarted}>Yes (Recommended)</Button>
+          <Button onClick={handleGetStarted}>{t("Yes (Recommended)")}</Button>
           <Button onClick={handleSkipRestorePoint} variant="danger">
-            No (Not Recommended)
+            {t("No (Not Recommended)")}
           </Button>
         </div>
 
         <p className="text-sparkle-text-secondary mt-4 text-sm">
-          <span className="font-semibold">Sparkle Version:</span>{" "}
-          {data?.version || "Error fetching version"}
+          <span className="font-semibold">{t("Sparkle Version:")}</span>{" "}
+          {data?.version || t("Error fetching version")}
         </p>
       </div>
     </Modal>

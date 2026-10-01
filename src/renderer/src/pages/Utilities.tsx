@@ -17,6 +17,7 @@ import {
   BluetoothIcon,
   SearchIcon,
 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { useState, useEffect } from "react"
 import { invoke } from "@/lib/electron"
 import { toast } from "react-toastify"
@@ -318,6 +319,7 @@ Write-Output "Network stack reset. Restart your PC to apply changes."
 ]
 
 function Utilities() {
+  const { t } = useTranslation()
   const [dropdownValues, setDropdownValues] = useState<Record<string, string>>({})
   const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({})
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({})
@@ -396,7 +398,7 @@ function Utilities() {
     const script = newState ? util.applyScript : util.unapplyScript
     if (script) {
       const loadingToastId = toast.loading(
-        `${newState ? "Applying" : "Unapplying"} ${util.name}...`,
+        t(newState ? "Applying {{name}}..." : "Unapplying {{name}}...", { name: t(util.name) }),
       )
       try {
         const result = await invoke({
@@ -410,7 +412,7 @@ function Utilities() {
           throw new Error(result.error || "Failed to execute script")
         }
         toast.update(loadingToastId, {
-          render: `${newState ? "Applied" : "Unapplied"} ${util.name}`,
+          render: t(newState ? "Applied {{name}}" : "Unapplied {{name}}", { name: t(util.name) }),
           type: "success",
           isLoading: false,
           autoClose: 3000,
@@ -420,7 +422,7 @@ function Utilities() {
         log.error(`Error toggling ${util.name}:`, error)
         setToggleStates((prev) => ({ ...prev, [util.name]: previousState }))
         toast.update(loadingToastId, {
-          render: `Failed to ${newState ? "apply" : "unapply"} ${util.name}`,
+          render: t(newState ? "Failed to apply {{name}}" : "Failed to unapply {{name}}", { name: t(util.name) }),
           type: "error",
           isLoading: false,
           autoClose: 3000,
@@ -438,7 +440,7 @@ function Utilities() {
       const script =
         typeof util.applyScript === "object" ? util.applyScript[value] : util.applyScript
       if (script) {
-        const loadingToastId = toast.loading(`Applying ${util.name}: ${value}...`)
+        const loadingToastId = toast.loading(t("Applying {{name}}: {{value}}...", { name: t(util.name), value }))
         try {
           const result = await invoke({
             channel: "run-powershell",
@@ -451,7 +453,7 @@ function Utilities() {
             throw new Error(result.error || "Failed to execute script")
           }
           toast.update(loadingToastId, {
-            render: `Applied ${util.name}: ${value}`,
+            render: t("Applied {{name}}: {{value}}", { name: t(util.name), value }),
             type: "success",
             isLoading: false,
             autoClose: 3000,
@@ -461,7 +463,7 @@ function Utilities() {
           log.error(`Error applying ${util.name}:`, error)
           setDropdownValues((prev) => ({ ...prev, [util.name]: previousValue }))
           toast.update(loadingToastId, {
-            render: `Failed to apply ${util.name}: ${value}`,
+            render: t("Failed to apply {{name}}: {{value}}", { name: t(util.name), value }),
             type: "error",
             isLoading: false,
             autoClose: 3000,
@@ -474,7 +476,7 @@ function Utilities() {
   const handleButtonClick = async (util: Utility) => {
     toast.dismiss()
     if (util.runScript) {
-      const loadingToastId = toast.loading(`Running ${util.name}...`)
+      const loadingToastId = toast.loading(t("Running {{name}}...", { name: t(util.name) }))
       try {
         const result = await invoke({
           channel: "run-powershell",
@@ -487,7 +489,7 @@ function Utilities() {
           throw new Error(result.error || "Failed to execute script")
         }
         toast.update(loadingToastId, {
-          render: `${util.name} completed`,
+          render: t("{{name}} completed", { name: t(util.name) }),
           type: "success",
           isLoading: false,
           autoClose: 3000,
@@ -496,7 +498,7 @@ function Utilities() {
         console.error(`Error running ${util.name}:`, error)
         log.error(`Error running ${util.name}:`, error)
         toast.update(loadingToastId, {
-          render: `Failed to run ${util.name}`,
+          render: t("Failed to run {{name}}", { name: t(util.name) }),
           type: "error",
           isLoading: false,
           autoClose: 3000,
@@ -510,28 +512,25 @@ function Utilities() {
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 shadow-2xl max-w-lg w-full mx-4 flex flex-col items-center text-center">
           <h1 className="text-3xl font-bold text-sparkle-text mb-4">
-            What's New in the Utilities Page
+            {t("What's New in the Utilities Page")}
           </h1>
 
           <p className="text-sparkle-text-secondary mb-6">
-            We've redesigned the Utilities page to be more useful and powerful.
+            {t("We've redesigned the Utilities page to be more useful and powerful.")}
           </p>
 
           <p className="text-sparkle-text-secondary mb-4 text-sm">
-            - Each utility now shows detailed descriptions and has new controls like toggles,
-            buttons, or dropdowns.
+            - {t("Each utility now shows detailed descriptions and has new controls like toggles, buttons, or dropdowns.")}
             <br />
             <br />
-            - Utilities run or apply settings directly using PowerShell scripts behind the scenes.
+            - {t("Utilities run or apply settings directly using PowerShell scripts behind the scenes.")}
             <br />
             <br />
-            - The settings sync with your Windows always reflecting your current configuration no
-            matter where you toggle these settings.
+            - {t("The settings sync with your Windows always reflecting your current configuration no matter where you toggle these settings.")}
             <br />
             <br />
             <p className="text-sparkle-primary">
-              - You can now manage Windows updates, restart graphics drivers, reset network, and
-              more.
+              - {t("You can now manage Windows updates, restart graphics drivers, reset network, and more.")}
             </p>
             <br /> <br />
           </p>
@@ -543,7 +542,7 @@ function Utilities() {
                 localStorage.setItem("utilitiesModalShown", "true")
               }}
             >
-              Got it
+              {t("Got it")}
             </Button>
           </div>
         </div>
@@ -552,7 +551,7 @@ function Utilities() {
       <RootDiv>
         <div className="flex gap-4 flex-col mb-10 mr-4">
           <LargeInput
-            placeholder="Search utilities..."
+            placeholder={t("Search utilities...")}
             className="w-full"
             icon={SearchIcon}
             onChange={(e) => setSearch(e.target.value)}
@@ -560,7 +559,7 @@ function Utilities() {
           />
           {filteredUtilities.length === 0 && (
             <p className="text-sparkle-text-secondary flex text-center items-center justify-center gap-2">
-              No utilities match your search.
+              {t("No utilities match your search.")}
             </p>
           )}
           {filteredUtilities !== null &&
@@ -570,15 +569,15 @@ function Utilities() {
                   {util.icon}
                   <div>
                     <div className="flex gap-3 items-center">
-                      <h1>{util.name}</h1>{" "}
+                      <h1>{t(util.name)}</h1>{" "}
                       {util.command && (
                         <p className="text-xs text-sparkle-primary">
-                          CMD:{" "}
+                          {t("CMD:")}{" "}
                           <code className="bg-sparkle-border p-0.5 rounded-md">{util.command}</code>
                         </p>
                       )}
                     </div>
-                    <p className="text-sm  text-sparkle-text-secondary">{util.description}</p>
+                    <p className="text-sm  text-sparkle-text-secondary">{t(util.description)}</p>
                   </div>
                   <div className="flex justify-end ml-auto">
                     {util.type === "toggle" &&
@@ -591,7 +590,7 @@ function Utilities() {
                         />
                       ))}
                     {util.type === "button" && (
-                      <Button onClick={() => handleButtonClick(util)}>{util.buttonText}</Button>
+                      <Button onClick={() => handleButtonClick(util)}>{util.buttonText ? t(util.buttonText) : ""}</Button>
                     )}
                     {util.type === "dropdown" &&
                       (loadingStates[util.name] ? (

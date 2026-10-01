@@ -1,5 +1,6 @@
 import Button from "@/components/ui/button"
 import Toggle from "@/components/ui/Toggle"
+import { useTranslation } from "react-i18next"
 import { useState, useEffect } from "react"
 import { invoke } from "@/lib/electron"
 import RootDiv from "@/components/rootdiv"
@@ -64,10 +65,11 @@ const cleanups = [
 ]
 
 function Clean() {
+  const { t } = useTranslation()
   const [selected, setSelected] = useState<string[]>([])
   const [loadingQueue, setLoadingQueue] = useState<string[]>([])
   const [lastClean, setLastClean] = useState(
-    localStorage.getItem("last-clean") || "Not cleaned yet.",
+    localStorage.getItem("last-clean") || t("Not cleaned yet."),
   )
   const [isCleaning, setIsCleaning] = useState(false)
   const [cleanupResults, setCleanupResults] = useState({})
@@ -119,7 +121,7 @@ function Clean() {
     for (const cleanup of cleanups) {
       if (!selected.includes(cleanup.id)) continue
       setLoadingQueue((q) => [...q, cleanup.id])
-      const toastId = toast.loading(`Running ${cleanup.label}...`)
+      const toastId = toast.loading(t("Running {{label}}...", { label: t(cleanup.label) }))
       try {
         const freedSpace = Number(
           await invoke({ channel: "cleaner:run-cleanup", payload: cleanup.id }),
@@ -127,7 +129,10 @@ function Clean() {
         newResults[cleanup.id] = freedSpace || 0
 
         toast.update(toastId, {
-          render: `${cleanup.label} completed! ${formatBytes(freedSpace)} cleared.`,
+          render: t("{{label}} completed! {{size}} cleared.", {
+            label: t(cleanup.label),
+            size: formatBytes(freedSpace),
+          }),
           type: "success",
           isLoading: false,
           autoClose: 3000,
@@ -135,7 +140,7 @@ function Clean() {
         anySuccess = true
       } catch (err: any) {
         toast.update(toastId, {
-          render: `Failed: ${err.message || err}`,
+          render: `${t("Failed: ")}${err.message || err}`,
           type: "error",
           isLoading: false,
           autoClose: 4000,
@@ -164,24 +169,24 @@ function Clean() {
             <Icon iconNode={broom} className="text-teal-500" size={28} />
           </div>
           <div className="flex-1">
-            <h2 className="text-2xl font-bold text-sparkle-text mb-1">System Cleaner</h2>
+            <h2 className="text-2xl font-bold text-sparkle-text mb-1">{t("System Cleaner")}</h2>
             <p className="text-sm text-sparkle-text-secondary">
-              Last cleaned: <span className="font-medium">{lastClean}</span>
+              {t("Last cleaned:")} <span className="font-medium">{lastClean}</span>
             </p>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
               <p className="text-sm text-sparkle-text-secondary">
                 {loadingSizes ? (
-                  "Calculating total size..."
+                  t("Calculating total size...")
                 ) : (
                   <>
-                    Total size:{" "}
+                    {t("Total size:")} {" "}
                     <span className="font-medium text-teal-500">{formatBytes(totalSize)}</span>
                   </>
                 )}
               </p>
               {totalFreed > 0 && (
                 <p className="text-sm text-green-500">
-                  Total freed: <span className="font-medium">{formatBytes(totalFreed)}</span>
+                  {t("Total freed:")} <span className="font-medium">{formatBytes(totalFreed)}</span>
                 </p>
               )}
             </div>
@@ -189,7 +194,7 @@ function Clean() {
           <div className="flex items-center">
             {selected.length > 0 ? (
               <Button onClick={() => setSelected([])} variant="secondary" className="mr-2">
-                Unselect All
+                {t("Unselect All")}
               </Button>
             ) : (
               <Button
@@ -197,7 +202,7 @@ function Clean() {
                 variant="secondary"
                 className="mr-2"
               >
-                Select All
+                {t("Select All")}
               </Button>
             )}
             <Button
@@ -210,12 +215,12 @@ function Clean() {
               {isCleaning ? (
                 <>
                   <LoaderCircle className="animate-spin" size={18} />
-                  <span>Cleaning...</span>
+                  <span>{t("Cleaning...")}</span>
                 </>
               ) : (
                 <>
                   <Icon iconNode={broom} size={18} />
-                  <span>Clean Selected</span>
+                  <span>{t("Clean Selected")}</span>
                 </>
               )}
             </Button>
@@ -238,26 +243,26 @@ function Clean() {
                   <div className="flex flex-col flex-1 min-w-0">
                     <div className="flex items-center gap-3">
                       <span className="text-base font-semibold text-sparkle-text truncate">
-                        {label}
+                        {t(label)}
                       </span>
                       {freedSpace ? (
                         <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-green-500/20 text-green-500">
-                          {formatBytes(freedSpace)} freed
+                          {formatBytes(freedSpace)} {t("freed")}
                         </span>
                       ) : null}
                     </div>
-                    <span className="text-sm text-sparkle-text-secondary mt-1">{description}</span>
+                    <span className="text-sm text-sparkle-text-secondary mt-1">{t(description)}</span>
                     <div className="flex items-center gap-4 mt-2">
                       <span className="text-xs text-sparkle-text-muted flex items-center gap-1">
-                        <span className="font-medium">Size:</span>
+                        <span className="font-medium">{t("Size:")}</span>
                         {loadingSizes ? (
-                          <span className="text-sparkle-text-secondary">Calculating...</span>
+                          <span className="text-sparkle-text-secondary">{t("Calculating...")}</span>
                         ) : currentSize !== undefined ? (
                           <span className="text-teal-500 font-medium">
                             {formatBytes(currentSize)}
                           </span>
                         ) : (
-                          <span className="text-sparkle-text-secondary">Unknown</span>
+                          <span className="text-sparkle-text-secondary">{t("Unknown")}</span>
                         )}
                       </span>
                       {path && path !== "Recycle Bin" && (
@@ -279,7 +284,7 @@ function Clean() {
                   <div className="absolute inset-0 flex items-center justify-center z-10 rounded-xl">
                     <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-sparkle-border border border-sparkle-border-secondary">
                       <LoaderCircle className="animate-spin text-teal-500" size={18} />
-                      <span className="text-sm font-medium text-teal-600">Cleaning...</span>
+                      <span className="text-sm font-medium text-teal-600">{t("Cleaning...")}</span>
                     </div>
                   </div>
                 )}

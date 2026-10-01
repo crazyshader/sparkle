@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useEffect, useState, type ComponentProps } from "react"
 import Modal from "@/components/ui/modal"
 import Button from "./ui/button"
@@ -84,6 +85,7 @@ function ChangelogContent({ body }: { body: string }) {
 }
 
 export default function ChangelogModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useTranslation()
   const [releases, setReleases] = useState<Release[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -114,16 +116,16 @@ export default function ChangelogModal({ open, onClose }: { open: boolean; onClo
     <Modal open={open} onClose={onClose}>
       <div className="bg-sparkle-card border border-sparkle-border rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[80vh] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-sparkle-border shrink-0">
-          <h2 className="text-xl font-semibold text-sparkle-text">What's New</h2>
+          <h2 className="text-xl font-semibold text-sparkle-text">{t("What's New")}</h2>
           <Button variant="secondary" onClick={onClose}>
-            Close
+            {t("Close")}
           </Button>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
-          {loading && <p className="text-sparkle-text-secondary">Loading changelog...</p>}
+          {loading && <p className="text-sparkle-text-secondary">{t("Loading changelog...")}</p>}
           {error && (
             <p className="text-red-500">
-              Failed to load changelog. Please check your internet connection.
+              {t("Failed to load changelog. Please check your internet connection.")}
             </p>
           )}
           {!loading &&

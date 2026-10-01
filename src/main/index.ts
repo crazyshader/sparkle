@@ -3,7 +3,7 @@ process.env.UV_THREADPOOL_SIZE = "32"
 import { app, shell, BrowserWindow, ipcMain, Tray } from "electron"
 import { join } from "path"
 import log from "electron-log"
-import { createTray } from "@main/tray"
+import { createTray, setTrayLocale, clearTray } from "@main/tray"
 import { setupPowerShellHandlers } from "@main/powershell"
 import { setupSystemHandlers } from "@main/system"
 import { setupTweaksHandlers } from "@main/tweakHandler"
@@ -30,6 +30,12 @@ if (store.get("showTray") === undefined) {
   store.set("showTray", false)
 }
 
+ipcMain.handle("locale:set", (_event: Electron.IpcMainInvokeEvent, locale: "en" | "zh-CN") => {
+  if (locale === "zh-CN" || locale === "en") {
+    setTrayLocale(locale)
+  }
+})
+
 ipcMain.handle("tray:get", () => {
   return store.get("showTray")
 })
@@ -44,6 +50,7 @@ ipcMain.handle("tray:set", (_event: Electron.IpcMainInvokeEvent, value: boolean)
       if (trayInstance) {
         trayInstance.destroy()
         trayInstance = null
+        clearTray()
       }
     }
   }

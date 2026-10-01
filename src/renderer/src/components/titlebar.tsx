@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 import { Loader2, Menu, Minus, Shield, Square, Terminal, X } from "lucide-react"
 import { close, minimize, toggleMaximize } from "../lib/electron"
@@ -19,7 +20,8 @@ function TitleBar({
 }: TitleBarProps): React.ReactElement {
   const { apps, action } = useAppInstallStore()
   const [consoleOpen, setConsoleOpen] = useState(false)
-  const actionText = action === "uninstall" ? "Uninstalling" : "Installing"
+  const { t } = useTranslation()
+  const actionText = t(action === "uninstall" ? "Uninstalling" : "Installing")
 
   const currentApp = apps.find((app) => app.status === "installing")
   const remainingCount = apps.filter((app) => app.status === "pending").length
@@ -42,7 +44,7 @@ function TitleBar({
           <img src={sparkleLogo} alt="Sparkle" className="h-5 w-5" />
           <span className="text-sparkle-text text-sm font-medium">Sparkle</span>
           <div className="bg-sparkle-card border border-sparkle-border-secondary p-1 rounded-xl w-16 text-center text-sm text-sparkle-text">
-            Beta
+            {t("Beta")}
           </div>
         </div>
         <div>
@@ -57,8 +59,8 @@ function TitleBar({
               {apps.length === 1
                 ? `${actionText} ${apps[0].name}`
                 : currentApp
-                  ? `${actionText} ${currentApp.name}, ${remainingCount} Left`
-                  : `${actionText} ${apps.length} apps`}
+                  ? `${actionText} ${currentApp.name}, ${t("{{count}} Left", { count: remainingCount })}`
+                  : `${actionText} ${t("{{count}} apps", { count: apps.length })}`}
               <Terminal className="w-3 h-3 text-sparkle-primary" />
             </Card>
           )}
@@ -67,7 +69,7 @@ function TitleBar({
         <div className="flex" style={{ WebkitAppRegion: "no-drag" } as any}>
           <div
             className="h-12.5 w-12 inline-flex items-center justify-center text-sparkle-text-secondary hover:bg-sparkle-accent transition-colors"
-            title={adminStatus ? "Running as Administrator" : "Not running as Administrator"}
+            title={adminStatus ? t("Running as Administrator") : t("Not running as Administrator")}
           >
             {adminStatus ? (
               <Shield className="w-5 h-5 text-sparkle-primary" />

@@ -1,7 +1,9 @@
+import { useTranslation } from "react-i18next"
 import { useMemo, useState, useEffect } from "react"
 import { invoke } from "@/lib/electron"
 
 function Greeting() {
+  const { t } = useTranslation()
   const [name, setName] = useState("")
 
   useEffect(() => {
@@ -44,14 +46,14 @@ function Greeting() {
 
   const randomGreeting = useMemo(() => {
     const allGreetings = [...generalGreetings, ...timeGreetings()]
-    return allGreetings[Math.floor(Math.random() * allGreetings.length)]
-  }, [])
+    return t(allGreetings[Math.floor(Math.random() * allGreetings.length)])
+  }, [t])
 
   return (
     <h1 className="text-2xl font-bold mb-4">
       {randomGreeting},{" "}
       <span className="bg-linear-to-r from-sparkle-primary to-sparkle-secondary bg-clip-text text-transparent">
-        {name || "friend"}
+        {name || t("friend")}
       </span>
     </h1>
   )

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState, useEffect, useCallback } from "react"
 import RootDiv from "@/components/rootdiv"
 import { Table, TableHeader, TableRow, TableHead, TableBody } from "@/components/ui/table"
@@ -25,6 +26,7 @@ interface InstalledApp {
 }
 
 function Debloat() {
+  const { t } = useTranslation()
   const [apps, setApps] = useState<InstalledApp[]>([])
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
@@ -55,7 +57,7 @@ function Debloat() {
     }
     const onComplete = () => {
       setUninstalling(false)
-      toast.success("Uninstall completed!")
+      toast.success(t("Uninstall completed!"))
       setSelected(new Set())
       loadApps()
     }
@@ -100,11 +102,11 @@ function Debloat() {
         payload: selectedApps,
       })
       if (!result?.success) {
-        toast.error("Some apps could not be uninstalled.")
+        toast.error(t("Some apps could not be uninstalled."))
       }
     } catch (err) {
       console.error("Uninstall failed:", err)
-      toast.error("Failed to uninstall apps.")
+      toast.error(t("Failed to uninstall apps."))
     } finally {
       setUninstalling(false)
     }
@@ -141,16 +143,15 @@ function Debloat() {
     <>
       <Modal open={showWelcome} onOpenChange={() => setShowWelcome(false)}>
         <div className="bg-sparkle-card p-4 rounded-2xl border border-sparkle-border text-sparkle-text w-[90vw] max-w-md">
-          <h2 className="text-lg font-semibold">Welcome to Debloat+</h2>
+          <h2 className="text-lg font-semibold">{t("Welcome to Debloat+")}</h2>
           <p className="mt-2 text-sm text-sparkle-text-secondary">
-            Debloat+ allows you to uninstall apps installed on your system rather than picking from
-            a list of pre-selected apps.
+            {t("Debloat+ allows you to uninstall apps installed on your system rather than picking from a list of pre-selected apps.")}
             <br />
             <br />
             <span className="font-medium text-sparkle-secondary">
-              This feature is still in beta
+              {t("This feature is still in beta")}
             </span>
-            , so please use it with caution. Some apps may not uninstall correctly.
+, {t("so please use it with caution. Some apps may not uninstall correctly.")}
           </p>
           <div className="flex justify-end mt-4">
             <Button
@@ -159,7 +160,7 @@ function Debloat() {
                 localStorage.setItem("debloatWelcomeShown", "true")
               }}
             >
-              Got it!
+              {t("Got it!")}
             </Button>
           </div>
         </div>
@@ -172,11 +173,10 @@ function Debloat() {
               <div className="p-2 rounded-full bg-red-500/20">
                 <TriangleAlert className="w-6 h-6 text-red-500" />
               </div>
-              <h3 className="text-xl font-semibold text-sparkle-text">Confirm Uninstall</h3>
+              <h3 className="text-xl font-semibold text-sparkle-text">{t("Confirm Uninstall")}</h3>
             </div>
             <p className="text-sm text-sparkle-text-secondary mb-4">
-              This will uninstall the following {selectedNames.length} app
-              {selectedNames.length !== 1 ? "s" : ""}:
+              {t("This will uninstall the following {{count}} apps:", { count: selectedNames.length })}
             </p>
             <ul className="max-h-48 overflow-y-auto custom-scrollbar space-y-1 mb-6">
               {selectedNames.map((name) => (
@@ -190,10 +190,10 @@ function Debloat() {
             </ul>
             <div className="flex justify-end gap-3">
               <Button variant="secondary" onClick={() => setShowConfirm(false)}>
-                Cancel
+                {t("Cancel")}
               </Button>
               <Button variant="danger" onClick={handleUninstall} disabled={uninstalling}>
-                {uninstalling ? "Uninstalling..." : "Uninstall"}
+                {uninstalling ? t("Uninstalling...") : t("Uninstall")}
               </Button>
             </div>
           </div>
@@ -201,10 +201,10 @@ function Debloat() {
 
         <div className="flex items-center justify-end mb-4">
           <h1 className="text-2xl font-bold text-sparkle-text mr-auto">
-            Installed Apps {!loading && !uninstalling && `(${apps.length})`}
+            {t("Installed Apps")} {!loading && !uninstalling && `(${apps.length})`}
             {uninstalling && (
               <span className="text-sm font-normal text-sparkle-text-secondary ml-2">
-                Uninstalling...
+                {t("Uninstalling...")}
               </span>
             )}
           </h1>
@@ -217,7 +217,7 @@ function Debloat() {
               className="flex items-center gap-2"
             >
               <RotateCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-              Refresh
+              {t("Refresh")}
             </Button>
             <Button
               variant="danger"
@@ -226,13 +226,13 @@ function Debloat() {
               className="flex items-center gap-2"
             >
               <Trash2 className="w-4 h-4" />
-              Uninstall Selected
+              {t("Uninstall Selected")}
             </Button>
           </div>
         </div>
         <div className="flex mr-4 mt-4 mb-4 w-full">
           <LargeInput
-            placeholder="Search installed apps..."
+            placeholder={t("Search installed apps...")}
             className="w-full"
             icon={Search}
             value={searchTerm}
@@ -245,23 +245,23 @@ function Debloat() {
               <TableHead className="w-10">
                 <Checkbox checked={allSelected || someSelected} onChange={toggleAll} />
               </TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Publisher</TableHead>
-              <TableHead>Version</TableHead>
-              <TableHead>Install Date</TableHead>
+              <TableHead>{t("Name")}</TableHead>
+              <TableHead>{t("Publisher")}</TableHead>
+              <TableHead>{t("Version")}</TableHead>
+              <TableHead>{t("Install Date")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <tr className="border-b border-sparkle-border">
                 <td colSpan={5} className="p-4 text-center text-sparkle-text-secondary">
-                  Loading installed apps...
+                  {t("Loading installed apps...")}
                 </td>
               </tr>
             ) : filteredApps.length === 0 ? (
               <tr className="border-b border-sparkle-border">
                 <td colSpan={5} className="p-4 text-center text-sparkle-text-secondary">
-                  No installed apps found.
+                  {t("No installed apps found.")}
                 </td>
               </tr>
             ) : (
@@ -287,7 +287,7 @@ function Debloat() {
                       </>}
                            {app.name.startsWith("sparkle") && <>
                      <div className="flex items-center gap-1 backdrop:blur-sm bg-cyan-500/20 rounded-md px-1 py-1">
-                       <Tooltip content="Do not uninstall sparkle this way. Close Sparkle and uninstall it another way." side="top" delay={0}>
+                       <Tooltip content={t("Do not uninstall sparkle this way. Close Sparkle and uninstall it another way.")} side="top" delay={0}>
                         <ShieldAlert className="w-5 h-5 text-cyan-500" />
                       </Tooltip>
                      </div>
@@ -300,7 +300,7 @@ function Debloat() {
                       <span className="select-text">{app.name}</span>
                       {app.publisher.includes("parcoil") || app.publisher.includes("Parcoil") ? (
                         <div className="flex items-center gap-1 backdrop:blur-sm bg-purple-500/20 rounded-md px-1 py-1">
-                          <Tooltip content="This is a Parcoil app.  " side="top" delay={0}>
+                          <Tooltip content={t("This is a Parcoil app.")} side="top" delay={0}>
                             <Star className="w-5 h-5 text-purple-500" />
                           </Tooltip>
                         </div>
@@ -316,7 +316,7 @@ function Debloat() {
           </TableBody>
         </Table>
         <p className="text-sm text-sparkle-text-secondary">
-          Apps are cached locally for performance. You can refresh the list at any time.
+          {t("Apps are cached locally for performance. You can refresh the list at any time.")}
         </p>
       </RootDiv>
     </>

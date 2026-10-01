@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState, useEffect } from "react"
 import { Routes, Route, Navigate } from "react-router-dom"
 import TitleBar from "./components/titlebar"
@@ -24,6 +25,7 @@ import Debloat from "./pages/Debloat"
 import NoAdmin from "./components/noAdmin"
 
 function App() {
+  const { t } = useTranslation()
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "system")
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     localStorage.getItem("sidebarCollapsed") === "true",
@@ -39,11 +41,11 @@ function App() {
       },
       "install-complete": () => {
         clearApps()
-        toast.success("Operation completed successfully!")
+        toast.success(t("Operation completed successfully!"))
       },
       "install-error": () => {
         clearApps()
-        toast.error("There was an error during the operation. Please try again.")
+        toast.error(t("There was an error during the operation. Please try again."))
       },
     }
 
