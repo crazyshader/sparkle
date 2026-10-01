@@ -58,7 +58,7 @@ function App() {
         window.electron.ipcRenderer.removeListener(channel, listeners[channel])
       })
     }
-  }, [setAppStatus, clearApps])
+  }, [setAppStatus, clearApps, t])
 
   useEffect(() => {
     const applyTheme = (theme) => {

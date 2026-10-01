@@ -597,9 +597,12 @@ function Utilities() {
                         <div className="w-6 h-6 border-2 border-sparkle-border-secondary border-t-sparkle-primary rounded-full animate-spin" />
                       ) : (
                         <Dropdown
-                          options={util.options || []}
-                          value={dropdownValues[util.name] || util.options?.[0] || ""}
-                          onChange={(value) => handleDropdownChange(util, value)}
+                          options={(util.options || []).map((o) => t(o))}
+                          value={t(dropdownValues[util.name] || util.options?.[0] || "")}
+                          onChange={(value) => {
+                            const raw = (util.options || []).find((o) => t(o) === value) ?? value
+                            handleDropdownChange(util, raw)
+                          }}
                         />
                       ))}
                   </div>

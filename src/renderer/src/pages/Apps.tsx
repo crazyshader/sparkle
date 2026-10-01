@@ -368,7 +368,7 @@ function Apps() {
       window.electron.ipcRenderer.removeListener("install-complete", handleInstallComplete)
       window.electron.ipcRenderer.removeListener("install-error", handleInstallError)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     setSelectedApps([]) // reset selections when switching sources

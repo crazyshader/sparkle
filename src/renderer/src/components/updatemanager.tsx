@@ -54,7 +54,7 @@ export default function UpdateManager(): React.ReactElement {
       window.electron.ipcRenderer.removeListener("updater:download-progress", onProgress)
       window.electron.ipcRenderer.removeListener("updater:downloaded", onDownloaded)
     }
-  }, [])
+  }, [t])
 
   const handleUpdateNow = async () => {
     if (isDownloaded) {
