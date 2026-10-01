@@ -68,8 +68,8 @@ function Clean() {
   const { t } = useTranslation()
   const [selected, setSelected] = useState<string[]>([])
   const [loadingQueue, setLoadingQueue] = useState<string[]>([])
-  const [lastClean, setLastClean] = useState(
-    localStorage.getItem("last-clean") || t("Not cleaned yet."),
+  const [lastClean, setLastClean] = useState<string | null>(() =>
+    localStorage.getItem("last-clean"),
   )
   const [isCleaning, setIsCleaning] = useState(false)
   const [cleanupResults, setCleanupResults] = useState({})
@@ -171,7 +171,7 @@ function Clean() {
           <div className="flex-1">
             <h2 className="text-2xl font-bold text-sparkle-text mb-1">{t("System Cleaner")}</h2>
             <p className="text-sm text-sparkle-text-secondary">
-              {t("Last cleaned:")} <span className="font-medium">{lastClean}</span>
+              {t("Last cleaned:")} <span className="font-medium">{lastClean ?? t("Not cleaned yet.")}</span>
             </p>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
               <p className="text-sm text-sparkle-text-secondary">

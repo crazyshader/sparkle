@@ -511,7 +511,7 @@ function AppliedTweaksTab() {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <p className="text-sparkle-text-secondary text-sm">
-              {appliedTweaks.length} {appliedTweaks.length !== 1 ? t("tweaks") : t("tweak")} {t("currently applied")}
+              {t("{{count}} tweaks currently applied", { count: appliedTweaks.length })}
             </p>
           </div>
           <div className="flex flex-wrap gap-2 justify-end">

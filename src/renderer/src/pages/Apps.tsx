@@ -655,7 +655,7 @@ function Apps() {
               className="flex gap-2 text-sm h-auto py-1 px-2"
               onClick={() => setShowSelectedAppsModal(true)}
             >
-              {selectedApps.length} {selectedApps.length !== 1 ? t("apps") : t("app")} {t("selected")}
+              {t("{{count}} apps selected", { count: selectedApps.length })}
             </Button>
           )}
           <Button
